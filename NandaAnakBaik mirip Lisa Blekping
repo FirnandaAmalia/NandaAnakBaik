@@ -1,0 +1,512 @@
+package gui;
+
+import java.awt.*;
+import javax.swing.*;
+
+public class DashboardApp {
+
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("Dashboard - Pet Klinik");
+        frame.setSize(1200, 800);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLayout(new BorderLayout());
+
+        // Sidebar
+        JPanel sidebar = createSidebar(frame);
+
+        // Main Content
+        JPanel mainContent = createHomePanel();
+
+        // Add to frame
+        frame.add(sidebar, BorderLayout.WEST);
+        frame.add(mainContent, BorderLayout.CENTER);
+
+        // Display frame
+        frame.setVisible(true);
+    }
+
+    private static JPanel createSidebar(JFrame frame) {
+        JPanel sidebar = new JPanel();
+        sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
+        sidebar.setBackground(new Color(45, 52, 54));
+        sidebar.setPreferredSize(new Dimension(250, 800));
+
+        JLabel userIcon = new JLabel("🦁", SwingConstants.CENTER);
+        userIcon.setFont(new Font("Arial", Font.PLAIN, 50));
+        userIcon.setForeground(Color.WHITE);
+        userIcon.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel userLabel = new JLabel("USER", SwingConstants.CENTER);
+        userLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        userLabel.setForeground(Color.WHITE);
+        userLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        sidebar.add(Box.createVerticalStrut(20));
+        sidebar.add(userIcon);
+        sidebar.add(Box.createVerticalStrut(10));
+        sidebar.add(userLabel);
+        sidebar.add(Box.createVerticalStrut(30));
+
+        // Buttons
+        String[] menuItems = {"Home", "Penitipan Hewan", "Perawatan Hewan", "Status Pelayanan", "Status Pembayaran", "History"};
+        for (String item : menuItems) {
+            JButton button = new JButton(item);
+            button.setMaximumSize(new Dimension(200, 50));
+            button.setAlignmentX(Component.CENTER_ALIGNMENT);
+            button.setBackground(new Color(99, 110, 114));
+            button.setForeground(Color.WHITE);
+            button.setFont(new Font("Arial", Font.PLAIN, 14));
+            button.setFocusPainted(false);
+
+            button.addActionListener(e -> {
+                JPanel contentPanel;
+                switch (item) {
+                    case "Home":
+                        contentPanel = createHomePanel();
+                        break;
+                    case "Penitipan Hewan":
+                        contentPanel = createPenitipanPanel();
+                        break;
+                    case "Perawatan Hewan":
+                        contentPanel = createPerawatanPanel();
+                        break;
+                    case "Status Pelayanan":
+                        contentPanel = createStatusPelayananPanel();
+                        break;
+                    case "Status Pembayaran":
+                        contentPanel = createStatusPembayaranPanel();
+                        break;
+                    default:
+                        contentPanel = createHistoryPanel();
+                        break;
+                }
+
+                frame.getContentPane().removeAll();
+                frame.add(sidebar, BorderLayout.WEST);
+                frame.add(contentPanel, BorderLayout.CENTER);
+                frame.revalidate();
+                frame.repaint();
+            });
+
+            sidebar.add(button);
+            sidebar.add(Box.createVerticalStrut(10));
+        }
+
+        JButton logoutButton = new JButton("Logout");
+        logoutButton.setMaximumSize(new Dimension(200, 50));
+        logoutButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        logoutButton.setBackground(new Color(231, 76, 60));
+        logoutButton.setForeground(Color.WHITE);
+        logoutButton.setFont(new Font("Arial", Font.BOLD, 14));
+        logoutButton.setFocusPainted(false);
+        logoutButton.addActionListener(e -> {
+            int confirm = JOptionPane.showConfirmDialog(
+                    frame, "Apakah Anda yakin ingin logout?", "Logout", JOptionPane.YES_NO_OPTION
+            );
+            if (confirm == JOptionPane.YES_OPTION) frame.dispose();
+        });
+        sidebar.add(Box.createVerticalStrut(20));
+        sidebar.add(logoutButton);
+
+        return sidebar;
+    }
+
+    private static JPanel createHomePanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(Color.WHITE);
+
+        JLabel titleLabel = new JLabel("HOME", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        panel.add(titleLabel, BorderLayout.NORTH);
+
+        JPanel content = new JPanel(new GridLayout(1, 2, 20, 20));
+        content.setBackground(Color.WHITE);
+        content.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        JPanel jamPanel = new JPanel(new BorderLayout());
+        jamPanel.setBorder(BorderFactory.createTitledBorder("JAM LAYANAN"));
+        JTextArea jamText = new JTextArea("""
+            SENIN : 09:00 - 20:00
+            SELASA : 09:00 - 20:00
+            RABU : 09:00 - 20:00
+            KAMIS : 09:00 - 20:00
+            JUMAT : 09:00 - 20:00
+            SABTU : 09:00 - 20:00
+            """);
+        jamText.setEditable(false);
+        jamText.setFont(new Font("Arial", Font.PLAIN, 14));
+        jamPanel.add(new JScrollPane(jamText), BorderLayout.CENTER);
+
+        JPanel jadwalPanel = new JPanel(new BorderLayout());
+        jadwalPanel.setBorder(BorderFactory.createTitledBorder("JADWAL DOKTER"));
+        JTextArea jadwalText = new JTextArea("""
+            Dokter 1 : 09:00 - 12:00
+            Dokter 2 : 13:00 - 17:00
+            """);
+        jadwalText.setEditable(false);
+        jadwalText.setFont(new Font("Arial", Font.PLAIN, 14));
+        jadwalPanel.add(new JScrollPane(jadwalText), BorderLayout.CENTER);
+
+        content.add(jamPanel);
+        content.add(jadwalPanel);
+
+        panel.add(content, BorderLayout.CENTER);
+
+        JLabel footer = new JLabel("PET KLINIK", SwingConstants.CENTER);
+        footer.setFont(new Font("Arial", Font.PLAIN, 14));
+        footer.setForeground(Color.GRAY);
+        panel.add(footer, BorderLayout.SOUTH);
+
+        return panel;
+    }
+
+    private static JPanel createPenitipanPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        JLabel titleLabel = new JLabel("FORMULIR PENITIPAN HEWAN", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        panel.add(titleLabel, BorderLayout.NORTH);
+    
+        JPanel formContainer = new JPanel(new BorderLayout());
+        formContainer.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createEmptyBorder(20, 20, 20, 20),
+                BorderFactory.createLineBorder(Color.GRAY, 2)));
+        formContainer.setBackground(Color.LIGHT_GRAY);
+    
+        JPanel formPanel = new JPanel(new GridBagLayout());
+        formPanel.setOpaque(false);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(10, 10, 10, 10);
+    
+        // Menambahkan komponen ke dalam form
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        formPanel.add(new JLabel("Nama Pemilik:"), gbc);
+        gbc.gridx = 1;
+        JTextField namaPemilikField = new JTextField(20);
+        formPanel.add(namaPemilikField, gbc);
+    
+        gbc.gridx = 0;
+        gbc.gridy++;
+        formPanel.add(new JLabel("Nomor HP:"), gbc);
+        gbc.gridx = 1;
+        JTextField nomorHPField = new JTextField(20);
+        formPanel.add(nomorHPField, gbc);
+    
+        gbc.gridx = 0;
+        gbc.gridy++;
+        formPanel.add(new JLabel("Alamat:"), gbc);
+        gbc.gridx = 1;
+        JTextField alamatField = new JTextField(20);
+        formPanel.add(alamatField, gbc);
+    
+        gbc.gridx = 0;
+        gbc.gridy++;
+        formPanel.add(new JLabel("Nama Hewan:"), gbc);
+        gbc.gridx = 1;
+        JTextField namaHewanField = new JTextField(20);
+        formPanel.add(namaHewanField, gbc);
+    
+        gbc.gridx = 0;
+        gbc.gridy++;
+        formPanel.add(new JLabel("Pilihan Hewan:"), gbc);
+        gbc.gridx = 1;
+        JComboBox<String> jenisHewanBox = new JComboBox<>(new String[]{"Anjing", "Kucing", "Hamster", "Kelinci", "Lainnya"});
+        formPanel.add(jenisHewanBox, gbc);
+    
+        gbc.gridx = 0;
+        gbc.gridy++;
+        formPanel.add(new JLabel("Kelamin:"), gbc);
+        gbc.gridx = 1;
+        JPanel kelaminPanel = new JPanel();
+        kelaminPanel.setOpaque(false); // Transparan agar mengikuti warna background
+        JRadioButton jantanButton = new JRadioButton("Jantan");
+        JRadioButton betinaButton = new JRadioButton("Betina");
+        ButtonGroup kelaminGroup = new ButtonGroup();
+        kelaminGroup.add(jantanButton);
+        kelaminGroup.add(betinaButton);
+        kelaminPanel.add(jantanButton);
+        kelaminPanel.add(betinaButton);
+        formPanel.add(kelaminPanel, gbc);
+    
+        gbc.gridx = 0;
+        gbc.gridy++;
+        formPanel.add(new JLabel("Jenis Hewan:"), gbc);
+        gbc.gridx = 1;
+        JTextField jenisField = new JTextField(20);
+        formPanel.add(jenisField, gbc);
+    
+        gbc.gridx = 0;
+        gbc.gridy++;
+        formPanel.add(new JLabel("Umur Hewan:"), gbc);
+        gbc.gridx = 1;
+        JTextField umurField = new JTextField(20);
+        formPanel.add(umurField, gbc);
+    
+        gbc.gridx = 0;
+        gbc.gridy++;
+        formPanel.add(new JLabel("Tanggal Penitipan (DD/MM/YYYY):"), gbc);
+        gbc.gridx = 1;
+        JTextField tanggalField = new JTextField(20);
+        formPanel.add(tanggalField, gbc);
+    
+        gbc.gridx = 0;
+        gbc.gridy++;
+        formPanel.add(new JLabel("Penginapan:"), gbc);
+        gbc.gridx = 1;
+        JComboBox<String> penginapanBox = new JComboBox<>(new String[]{"Harian", "Mingguan", "Bulanan"});
+        formPanel.add(penginapanBox, gbc);
+    
+        gbc.gridx = 0;
+        gbc.gridy++;
+        formPanel.add(new JLabel("Catatan Keluhan:"), gbc);
+        gbc.gridx = 1;
+        JTextField keluhanField = new JTextField(20);
+        formPanel.add(keluhanField, gbc);
+    
+        // Submit Button
+        gbc.gridx = 0;
+        gbc.gridy++;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        JButton submitButton = new JButton("Submit");
+        submitButton.setFont(new Font("Arial", Font.BOLD, 14));
+        submitButton.setBackground(new Color(46, 204, 113));
+        submitButton.setForeground(Color.WHITE);
+        submitButton.addActionListener(e -> {
+            String namaPemilik = namaPemilikField.getText();
+            String nomorHP = nomorHPField.getText();
+            String alamat = alamatField.getText();
+            String namaHewan = namaHewanField.getText();
+            String jenisHewan = jenisHewanBox.getSelectedItem().toString();
+            String kelamin = jantanButton.isSelected() ? "Jantan" : "Betina";
+            String umurHewan = umurField.getText();
+            String tanggalPenitipan = tanggalField.getText();
+            String penginapan = penginapanBox.getSelectedItem().toString();
+            String keluhan = keluhanField.getText();
+    
+            // Validasi input kosong
+            if (namaPemilik.isEmpty() || nomorHP.isEmpty() || alamat.isEmpty() ||
+                namaHewan.isEmpty() || umurHewan.isEmpty() || tanggalPenitipan.isEmpty()) {
+                JOptionPane.showMessageDialog(panel,
+                        "Harap isi semua kolom yang wajib diisi!",
+                        "Peringatan",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+    
+            // Tampilkan pesan konfirmasi
+            JOptionPane.showMessageDialog(panel,
+                    "Informasi Penitipan Hewan:\n" +
+                    "Nama Pemilik: " + namaPemilik + "\n" +
+                    "Nomor HP: " + nomorHP + "\n" +
+                    "Alamat: " + alamat + "\n" +
+                    "Nama Hewan: " + namaHewan + "\n" +
+                    "Jenis Hewan: " + jenisHewan + "\n" +
+                    "Kelamin: " + kelamin + "\n" +
+                    "Umur Hewan: " + umurHewan + "\n" +
+                    "Tanggal Penitipan: " + tanggalPenitipan + "\n" +
+                    "Durasi Penginapan: " + penginapan + "\n" +
+                    "Catatan Keluhan: " + keluhan,
+                    "Konfirmasi Penitipan Hewan",
+                    JOptionPane.INFORMATION_MESSAGE);
+    
+            // Simpan data ke database atau status pelayanan di aplikasi (opsional)
+        });
+        formPanel.add(submitButton, gbc);
+    
+        formContainer.add(formPanel, BorderLayout.CENTER);
+        panel.add(formContainer, BorderLayout.CENTER);
+        return panel;
+    }
+
+    private static JPanel createPerawatanPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        JLabel titleLabel = new JLabel("FORMULIR PERAWATAN HEWAN", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        panel.add(titleLabel, BorderLayout.NORTH);
+    
+        JPanel formContainer = new JPanel(new BorderLayout());
+        formContainer.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createEmptyBorder(20, 20, 20, 20),
+                BorderFactory.createLineBorder(Color.GRAY, 2)));
+        formContainer.setBackground(Color.LIGHT_GRAY);
+    
+        JPanel formPanel = new JPanel(new GridBagLayout());
+        formPanel.setOpaque(false);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(10, 10, 10, 10);
+    
+        // Nama Pemilik
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        formPanel.add(new JLabel("Nama Pemilik:"), gbc);
+        gbc.gridx = 1;
+        JTextField namaPemilikField = new JTextField(20);
+        formPanel.add(namaPemilikField, gbc);
+    
+        // Nomor HP
+        gbc.gridx = 0;
+        gbc.gridy++;
+        formPanel.add(new JLabel("Nomor HP:"), gbc);
+        gbc.gridx = 1;
+        JTextField nomorHPField = new JTextField(20);
+        formPanel.add(nomorHPField, gbc);
+    
+        // Alamat
+        gbc.gridx = 0;
+        gbc.gridy++;
+        formPanel.add(new JLabel("Alamat:"), gbc);
+        gbc.gridx = 1;
+        JTextField alamatField = new JTextField(20);
+        formPanel.add(alamatField, gbc);
+    
+        // Nama Hewan
+        gbc.gridx = 0;
+        gbc.gridy++;
+        formPanel.add(new JLabel("Nama Hewan:"), gbc);
+        gbc.gridx = 1;
+        JTextField namaHewanField = new JTextField(20);
+        formPanel.add(namaHewanField, gbc);
+    
+        // Pilihan Hewan
+        gbc.gridx = 0;
+        gbc.gridy++;
+        formPanel.add(new JLabel("Pilihan Hewan:"), gbc);
+        gbc.gridx = 1;
+        JComboBox<String> pilihanHewanBox = new JComboBox<>(new String[]{"Anjing", "Kucing", "Hamster", "Kelinci", "Lainnya"});
+        formPanel.add(pilihanHewanBox, gbc);
+    
+        // Kelamin
+        gbc.gridx = 0;
+        gbc.gridy++;
+        formPanel.add(new JLabel("Kelamin:"), gbc);
+        gbc.gridx = 1;
+        JPanel kelaminPanel = new JPanel();
+        kelaminPanel.setOpaque(false);
+        JRadioButton jantanButton = new JRadioButton("Jantan");
+        JRadioButton betinaButton = new JRadioButton("Betina");
+        ButtonGroup kelaminGroup = new ButtonGroup();
+        kelaminGroup.add(jantanButton);
+        kelaminGroup.add(betinaButton);
+        kelaminPanel.add(jantanButton);
+        kelaminPanel.add(betinaButton);
+        formPanel.add(kelaminPanel, gbc);
+    
+        // Umur Hewan
+        gbc.gridx = 0;
+        gbc.gridy++;
+        formPanel.add(new JLabel("Umur Hewan:"), gbc);
+        gbc.gridx = 1;
+        JTextField umurField = new JTextField(20);
+        formPanel.add(umurField, gbc);
+    
+        // Layanan
+        gbc.gridx = 0;
+        gbc.gridy++;
+        formPanel.add(new JLabel("Layanan:"), gbc);
+        gbc.gridx = 1;
+        JPanel layananPanel = new JPanel();
+        layananPanel.setOpaque(false);
+        JCheckBox cekKesehatanCheckBox = new JCheckBox("Cek Kesehatan");
+        JCheckBox vaksinasiCheckBox = new JCheckBox("Vaksinasi");
+        JCheckBox groomingCheckBox = new JCheckBox("Grooming");
+        JCheckBox emergencyCareCheckBox = new JCheckBox("Perawatan Darurat");
+        JCheckBox sterilizationCheckBox = new JCheckBox("Sterilisasi");
+        layananPanel.add(cekKesehatanCheckBox);
+        layananPanel.add(vaksinasiCheckBox);
+        layananPanel.add(groomingCheckBox);
+        layananPanel.add(emergencyCareCheckBox);
+        layananPanel.add(sterilizationCheckBox);
+        formPanel.add(layananPanel, gbc);
+    
+        // Catatan Keluhan
+        gbc.gridx = 0;
+        gbc.gridy++;
+        formPanel.add(new JLabel("Catatan Keluhan:"), gbc);
+        gbc.gridx = 1;
+        JTextField keluhanField = new JTextField(20);
+        formPanel.add(keluhanField, gbc);
+    
+        // Submit Button
+        gbc.gridx = 0;
+        gbc.gridy++;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        JButton submitButton = new JButton("Submit");
+        submitButton.setFont(new Font("Arial", Font.BOLD, 14));
+        submitButton.setBackground(new Color(46, 204, 113));
+        submitButton.setForeground(Color.WHITE);
+        submitButton.addActionListener(e -> {
+            String namaPemilik = namaPemilikField.getText();
+            String nomorHP = nomorHPField.getText();
+            String alamat = alamatField.getText();
+            String namaHewan = namaHewanField.getText();
+            String pilihanHewan = pilihanHewanBox.getSelectedItem().toString();
+            String kelamin = jantanButton.isSelected() ? "Jantan" : "Betina";
+            String umurHewan = umurField.getText();
+            StringBuilder layananBuilder = new StringBuilder();
+            if (cekKesehatanCheckBox.isSelected()) layananBuilder.append("Cek Kesehatan, ");
+            if (vaksinasiCheckBox.isSelected()) layananBuilder.append("Vaksinasi, ");
+            if (groomingCheckBox.isSelected()) layananBuilder.append("Grooming, ");
+            if (emergencyCareCheckBox.isSelected()) layananBuilder.append("Perawatan Darurat, ");
+            if (sterilizationCheckBox.isSelected()) layananBuilder.append("Sterilisasi, ");
+            String layanan = layananBuilder.length() > 0 ? layananBuilder.substring(0, layananBuilder.length() - 2) : "Tidak ada layanan";
+            String keluhan = keluhanField.getText();
+    
+            // Validasi input kosong
+            if (namaPemilik.isEmpty() || nomorHP.isEmpty() || alamat.isEmpty() || namaHewan.isEmpty() || umurHewan.isEmpty()) {
+                JOptionPane.showMessageDialog(panel,
+                        "Harap isi semua kolom yang wajib diisi!",
+                        "Peringatan",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+    
+            // Tampilkan pesan konfirmasi
+            JOptionPane.showMessageDialog(panel,
+                    "Informasi Perawatan Hewan:\n" +
+                            "Nama Pemilik: " + namaPemilik + "\n" +
+                            "Nomor HP: " + nomorHP + "\n" +
+                            "Alamat: " + alamat + "\n" +
+                            "Nama Hewan: " + namaHewan + "\n" +
+                            "Pilihan Hewan: " + pilihanHewan + "\n" +
+                            "Kelamin: " + kelamin + "\n" +
+                            "Umur Hewan: " + umurHewan + "\n" +
+                            "Layanan: " + layanan + "\n" +
+                            "Catatan Keluhan: " + keluhan,
+                    "Konfirmasi Perawatan Hewan",
+                    JOptionPane.INFORMATION_MESSAGE);
+        });
+        formPanel.add(submitButton, gbc);
+    
+        formContainer.add(formPanel, BorderLayout.CENTER);
+        panel.add(formContainer, BorderLayout.CENTER);
+        return panel;
+    }
+
+    private static JPanel createStatusPelayananPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        JLabel label = new JLabel("STATUS PELAYANAN", SwingConstants.CENTER);
+        label.setFont(new Font("Arial", Font.BOLD, 18));
+        panel.add(label, BorderLayout.CENTER);
+        return panel;
+    }
+
+    private static JPanel createStatusPembayaranPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        JLabel label = new JLabel("STATUS PEMBAYARAN", SwingConstants.CENTER);
+        label.setFont(new Font("Arial", Font.BOLD, 18));
+        panel.add(label, BorderLayout.CENTER);
+        return panel;
+    }
+
+    private static JPanel createHistoryPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        JLabel label = new JLabel("HISTORY", SwingConstants.CENTER);
+        label.setFont(new Font("Arial", Font.BOLD, 18));
+        panel.add(label, BorderLayout.CENTER);
+        return panel;
+    }
+}
